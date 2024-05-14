@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: my-app
-        image: nginx:1.19.10  # Use a stable image for the initial deployment
+        image: nginx:non-existent-tag  # Introduce an error for testing
         ports:
         - containerPort: 80
         livenessProbe:
