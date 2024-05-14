@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: my-app
 spec:
-  replicas: 1
+  replicas: 5
   selector:
     matchLabels:
       app: my-app
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: my-app
-        image: nginx:1.19.10
+        image: nginx:1.19.10  # Use a stable image for the initial deployment
         ports:
         - containerPort: 80
         livenessProbe:
@@ -25,7 +25,7 @@ spec:
           periodSeconds: 3
         readinessProbe:
           httpGet:
-            path: /non-existent  # Intentional failure path
+            path: /
             port: 80
           initialDelaySeconds: 3
           periodSeconds: 3
