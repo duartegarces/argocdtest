@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: my-app
-        image: nginx:1.19.10  # Use a stable image for the initial deployment
+        image: nginx:non-existent-tag  # Introduce an error for testing
         ports:
         - containerPort: 80
         livenessProbe:
@@ -39,3 +39,10 @@ spec:
           periodSeconds: 3
   progressDeadlineSeconds: 60  # Set a deadline for progress
   revisionHistoryLimit: 2      # Keep at least two revisions for rollback
+  rollbackWindow:
+    revisionLimit: 2            # Specifies the number of revisions to keep for rollback
+  automatedRollout:
+    failureCondition:
+      - conditionType: "RolloutConditionProgressing"
+        status: "False"
+        reason: "ProgressDeadlineExceeded"
