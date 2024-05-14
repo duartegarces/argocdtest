@@ -1,9 +1,17 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
   name: my-app
+  namespace: test-namespace
 spec:
   replicas: 5
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+        - pause: {duration: 10s}
+        - setWeight: 50
+        - pause: {duration: 10s}
   selector:
     matchLabels:
       app: my-app
@@ -14,7 +22,7 @@ spec:
     spec:
       containers:
       - name: my-app
-        image: nginx:non-existent-tag  # Introduce an error
+        image: nginx:non-existent-tag  # Introduce an error for testing
         ports:
         - containerPort: 80
         livenessProbe:
@@ -25,7 +33,9 @@ spec:
           periodSeconds: 3
         readinessProbe:
           httpGet:
-            path: /
+            path: /non-existent  # Intentional failure path
             port: 80
           initialDelaySeconds: 3
           periodSeconds: 3
+  progressDeadlineSeconds: 60  # Set a deadline for progress
+  revisionHistoryLimit: 2      # Keep at least two revisions for rollback
