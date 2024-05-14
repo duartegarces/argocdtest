@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: my-app
-        image: nginx:non-existent-tag  # Introduce an error for testing
+        image: nginx:non-existent-tag1  # Introduce an error for testing
         ports:
         - containerPort: 80
         livenessProbe:
