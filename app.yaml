@@ -1,9 +1,17 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
   name: nginx
 spec:
   replicas: 5
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+        - pause: { duration: 10m }
+        - setWeight: 50
+        - pause: { duration: 10m }
+        - setWeight: 100
   selector:
     matchLabels:
       app: nginx
@@ -29,4 +37,5 @@ spec:
               port: 80
             initialDelaySeconds: 5
             periodSeconds: 10
+  progressDeadlineSeconds: 600
 
