@@ -1,0 +1,49 @@
+# nginx-rollout-failing.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: nginx-new
+  namespace: test-namespace
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: nginx-new
+  template:
+    metadata:
+      labels:
+        app: nginx-new
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.19.10-invalid # Invalid image to simulate failure
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+  strategy:
+    blueGreen:
+      activeService: nginx-active
+      previewService: nginx-preview
+      autoPromotionEnabled: false
+      scaleDownDelaySeconds: 30
+      abortScaleDownDelaySeconds: 30
+  progressDeadlineSeconds: 60
+  progressDeadlineAbort: true
+  revisionHistoryLimit: 5
+  rollbackWindow:
+    revisions: 3
+  analysis:
+    successfulRunHistoryLimit: 10
+    unsuccessfulRunHistoryLimit: 10
+

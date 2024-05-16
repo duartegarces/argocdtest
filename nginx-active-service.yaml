@@ -1,0 +1,14 @@
+# nginx-active-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-active
+  namespace: test-namespace
+spec:
+  selector:
+    app: nginx-new
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
